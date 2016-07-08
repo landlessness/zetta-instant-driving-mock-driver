@@ -1,7 +1,7 @@
 var util = require('util');
 var extend = require('node.extend');
 
-var IMAGE_URL_ROOT = 'http://www.zettaapi.org/icons/';
+var IMAGE_URL_ROOT = 'https://raw.githubusercontent.com/landlessness/zetta-instant-driving-mock-driver/master/example/images/';
 var IMAGE_EXTENSION = '.png';
 
 var stateImageForDevice = function(device) {
@@ -10,33 +10,33 @@ var stateImageForDevice = function(device) {
 
 module.exports = function(server) {
   // TODO: swap with server.ql and text
-  var automobileQuery = server.where({type: 'automobile'});
-  server.observe([automobileQuery], function(automobile) {
-    automobile.style = extend(true, automobile.style, {properties: {}});
-    automobile.style.properties = extend(true, automobile.style.properties, {
+  var InstantDrivingQuery = server.where({type: 'instant-driving'});
+  server.observe([InstantDrivingQuery], function(InstantDriving) {
+    InstantDriving.style = extend(true, InstantDriving.style, {properties: {}});
+    InstantDriving.style.properties = extend(true, InstantDriving.style.properties, {
       vehicleSpeed: {
         display: 'billboard',
         significantDigits: 1,
         symbol: 'km/h'
       }
     });
-    var states = Object.keys(automobile._allowed);
+    var states = Object.keys(InstantDriving._allowed);
     for (i = 0; i < states.length; i++) {
-      automobile._allowed[states[i]].push('_update-state-image');
+      InstantDriving._allowed[states[i]].push('_update-state-image');
     }
-    automobile._transitions['_update-state-image'] = {
+    InstantDriving._transitions['_update-state-image'] = {
       handler: function(imageURL, tintMode, foregroundColor, cb) {
-        if (tintMode !== 'original') {
-          tintMode = 'template';
+        if (tintMode !== 'template') {
+          tintMode = 'original';
         }
-        automobile.style.properties = extend(true, automobile.style.properties, {
+        InstantDriving.style.properties = extend(true, InstantDriving.style.properties, {
           stateImage: {
             url: imageURL,
             tintMode: tintMode
           }
         });
         if (foregroundColor) {
-          automobile.style.properties.stateImage.foregroundColor = foregroundColor;
+          InstantDriving.style.properties.stateImage.foregroundColor = foregroundColor;
         }
         cb();
       },
@@ -46,11 +46,11 @@ module.exports = function(server) {
         {name: 'foregroundColor', type: 'text'}
       ]
     };
-    automobile.call('_update-state-image', stateImageForDevice(automobile), 'template', null);
-    var stateStream = automobile.createReadStream('state');
+    InstantDriving.call('_update-state-image', stateImageForDevice(InstantDriving), 'original', null);
+    var stateStream = InstantDriving.createReadStream('state');
     stateStream.on('data', function(newState) {
-      automobile.call('_update-state-image', stateImageForDevice(automobile), 'template', null);
+      InstantDriving.call('_update-state-image', stateImageForDevice(InstantDriving), 'original', null);
     });
-    automobile.style.actions = extend(true, automobile.style.actions, {'_update-state-image': {display: 'none'}});
+    InstantDriving.style.actions = extend(true, InstantDriving.style.actions, {'_update-state-image': {display: 'none'}});
   });
 }

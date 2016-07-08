@@ -29,12 +29,12 @@ InstantDriving.prototype.init = function(config) {
   config
     .name(name)
     .type('instant-driving')
-    .state('medium')
-    .when('low', {allow: ['make-driving-behavior-risk-medium', 'make-driving-behavior-risk-high']})
-    .when('medium', {allow: ['make-driving-behavior-risk-high', 'make-driving-behavior-risk-low']})
-    .when('high', {allow: ['make-driving-behavior-risk-low', 'make-driving-behavior-risk-medium']})
+    .state('moderate')
+    .when('low', {allow: ['make-driving-behavior-risk-moderate', 'make-driving-behavior-risk-high']})
+    .when('moderate', {allow: ['make-driving-behavior-risk-high', 'make-driving-behavior-risk-low']})
+    .when('high', {allow: ['make-driving-behavior-risk-low', 'make-driving-behavior-risk-moderate']})
     .map('make-driving-behavior-risk-low', this.makeDrivingBehaviorRiskLow)
-    .map('make-driving-behavior-risk-medium', this.makeDrivingBehaviorRiskMedium)
+    .map('make-driving-behavior-risk-moderate', this.makeDrivingBehaviorRiskModerate)
     .map('make-driving-behavior-risk-high', this.makeDrivingBehaviorRiskHigh)
     .monitor('drivingConditionsRisk')
     .monitor('vehicleSpeed')
@@ -52,8 +52,8 @@ InstantDriving.prototype.makeDrivingBehaviorRiskLow = function(cb) {
   cb();
 }
 
-InstantDriving.prototype.makeDrivingBehaviorRiskMedium = function(cb) {
-  this.state = 'medium';
+InstantDriving.prototype.makeDrivingBehaviorRiskModerate = function(cb) {
+  this.state = 'moderate';
   cb();
 }
 
